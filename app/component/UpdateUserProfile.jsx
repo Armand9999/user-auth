@@ -2,7 +2,7 @@ import { useUser, useReverification } from "@clerk/nextjs";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
+
 
 const schema = yup.object().shape({
     firstName: yup.string().required("First name is required").min(2, "First name must be at 2 characters"),

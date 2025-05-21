@@ -1,7 +1,7 @@
 'use client'
 
-import { useUser, useAuth } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import SignOutButton from "../component/SignOutButton";
 import UpdateUserProfile from "../component/UpdateUserProfile";
@@ -11,7 +11,7 @@ import Link from 'next/link'
 
 export default function Profile() {
     const router = useRouter()
-    const { user, isSignedIn, isLoaded } = useUser();
+    const { user } = useUser();
     const [activeTab, setActiveTab] = useState('profile');
     const [isUpdating, setIsUpdating] = useState(false);
     
@@ -20,11 +20,7 @@ export default function Profile() {
 
     if (!user) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
-    const handleChangePassword = () => {
-        if (isSignedIn) {
-            router.push('/sign-in/forgot-password');
-        }
-    }
+    
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -148,7 +144,7 @@ export default function Profile() {
                                             <p className="text-sm text-gray-500">Last changed 3 months ago</p>
                                         </div>
                                         <button
-                                            onClick={handleChangePassword}
+                                            
                                             type="button"
                                             className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
                                         >
