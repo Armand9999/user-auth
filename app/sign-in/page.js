@@ -3,8 +3,8 @@
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useSignIn, useUser } from "@clerk/nextjs";
-import { useState, useRef, useEffect } from "react";
+import { useSignIn } from "@clerk/nextjs";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
@@ -24,7 +24,7 @@ const SignIn = () => {
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
-    const { isSignedIn } = useUser();
+   
 
     if (!isLoaded) return null;
     

@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 
 export default function Profile() {
-    const router = useRouter()
+    
     const { user } = useUser();
     const [activeTab, setActiveTab] = useState('profile');
     const [isUpdating, setIsUpdating] = useState(false);

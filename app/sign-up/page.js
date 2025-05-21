@@ -21,7 +21,7 @@ const SignUp = () => {
     });
 
     const { isLoaded, signUp } = useSignUp();
-    const { isSignedIn } = useUser();
+    
     const [verified, setVerified] = useState(false);
     const [verifying, setVerifying] = useState(false);
     const [loading, setLoading] = useState(false);

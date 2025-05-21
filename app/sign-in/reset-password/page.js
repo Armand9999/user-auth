@@ -6,7 +6,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useSignIn } from "@clerk/nextjs";
 import { useState } from "react";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
-import { redirect, useRouter } from "next/navigation";
+
 
 const schema = yup.object().shape({
     password: yup.string().min(8, "Password must be at least 8 characters").required("Password is required"),
@@ -29,7 +29,7 @@ const ResetPassword = () => {
     const [loading, setLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const router = useRouter();
+    
 
     const onSubmit = async (data) => {
         setLoading(true);
