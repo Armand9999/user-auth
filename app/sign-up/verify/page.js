@@ -28,16 +28,13 @@ export default function VerifyPage() {
 
       await handleEmailLinkVerification({
         // URL to navigate to if sign-up flow needs more requirements, such as MFA
-        redirectUrl: `${protocol}//${host}/sign-up`,
+        // redirectUrl: `${protocol}//${host}/sign-up`,
         onVerifiedOnOtherDevice: handleVerifiedOnOtherDevice
       })
 
       // If not redirected at this point,
       // the flow has completed
       setVerificationStatus('verified')
-      setTimeout(() => {
-        router.push('/sign-in')
-      }, 2000)
 
     } catch (err) {
       let status = 'failed'
