@@ -1,13 +1,13 @@
 'use client'
 
-import { useSignUp, useClerk } from '@clerk/nextjs'
+import {  useClerk } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { EmailLinkErrorCodeStatus, isEmailLinkError } from '@clerk/nextjs/dist/types/errors'
+import { EmailLinkErrorCodeStatus, isEmailLinkError } from '@clerk/nextjs/errors'
 
 export default function VerifyPage() {
-  const { isLoaded, signUp, setActive } = useSignUp()
+  // const { isLoaded, signUp, setActive } = useSignUp()
   const [verificationStatus, setVerificationStatus] = useState('loading') 
   const [errorMessage, setErrorMessage] = useState('')
   const router = useRouter()
@@ -28,6 +28,10 @@ export default function VerifyPage() {
         // If not redirected at this point,
         // the flow has completed
         setVerificationStatus('verified')
+        setTimeout(() => {
+          router.push('/sign-in')
+        }, 2000)
+
       } catch (err) {
         let status = 'failed'
 
@@ -115,16 +119,16 @@ export default function VerifyPage() {
             </div>
             <h3 className="mt-3 text-lg font-medium text-gray-900">Verification Successful!</h3>
             <p className="mt-2 text-sm text-gray-500">
-              Your email has been verified. You will be redirected to your profile shortly.
+              Your email has been verified. You will be redirected to the sign in page shortly.
             </p>
-            <div className="mt-5">
+            {/* <div className="mt-5">
               <Link
                 href="/profile"
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-rose-500 hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
               >
                 Go to Profile
               </Link>
-            </div>
+            </div> */}
           </div>
         )}
 
