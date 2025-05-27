@@ -1,55 +1,96 @@
 'use client'
 
-import { useSignUp } from '@clerk/nextjs'
+import { useSignUp, useClerk } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { EmailLinkErrorCodeStatus, isEmailLinkError } from '@clerk/nextjs/dist/types/errors'
 
 export default function VerifyPage() {
   const { isLoaded, signUp, setActive } = useSignUp()
   const [verificationStatus, setVerificationStatus] = useState('loading') 
   const [errorMessage, setErrorMessage] = useState('')
   const router = useRouter()
+  const { handleEmailLinkVerification, loaded } = useClerk()
 
-  useEffect(() => {
-    if (!isLoaded) return
-
-    // Attempt to complete the sign-up process
-    const completeSignUp = async () => {
+    async function verify() {
       try {
-        // This verifies that the user completed email verification
-        // from the same device/browser
-        const completeSignUpResponse = await signUp.attemptEmailAddressVerification({
-          code: '',
+        // Dynamically set the host domain for dev and prod
+        // You could instead use an environment variable or other source for the host domain
+        const protocol = window.location.protocol
+        const host = window.location.host
+
+        await handleEmailLinkVerification({
+          // URL to navigate to if sign-up flow needs more requirements, such as MFA
+          redirectUrl: `${protocol}//${host}/sign-up`,
         })
 
-        if (completeSignUpResponse.status === 'complete') {
-          // Set the user session active
-          await setActive({ session: completeSignUpResponse.createdSessionId })
-          setVerificationStatus('success')
-          
-          // Redirect to profile after a short delay
-          setTimeout(() => {
-            router.push('/profile')
-          }, 2000)
-        } else {
-          console.error('Verification status:', completeSignUpResponse.status)
-          setVerificationStatus('error')
-          setErrorMessage('Verification failed. Please try again.')
-        }
+        // If not redirected at this point,
+        // the flow has completed
+        setVerificationStatus('verified')
       } catch (err) {
-        console.error('Error during verification:', err)
-        setVerificationStatus('error')
-        setErrorMessage(err?.errors?.[0]?.longMessage || 'An error occurred during verification.')
+        let status = 'failed'
+
+      if (isEmailLinkError(err)) {
+        // If link expired, set status to expired
+        if (err.code === EmailLinkErrorCodeStatus.Expired) {
+          status = 'expired'
+          setErrorMessage('This link has expired. Please try again.')
+        } else if (err.code === EmailLinkErrorCodeStatus.ClientMismatch) {
+          // OPTIONAL: This check is only required if you have
+          // the 'Require the same device and browser' setting
+          // enabled in the Clerk Dashboard
+          status = 'client_mismatch'
+          setErrorMessage('This link must be verified in on the same device and browser.')
+        }
       }
+     setVerificationStatus(status)
+     setErrorMessage(err?.errors?.[0]?.longMessage || 'An error occurred during verification.')
     }
-
-    completeSignUp()
-  }, [isLoaded, signUp, setActive, router])
-
-  if (!isLoaded) {
-    return null
   }
+
+  useEffect(() => {
+    if(!loaded) return
+
+    verify()
+  }, [handleEmailLinkVerification, loaded])
+
+  // useEffect(() => {
+  //   if (!isLoaded) return
+
+  //   // Attempt to complete the sign-up process
+  //   const completeSignUp = async () => {
+  //     try {
+  //       // This verifies that the user completed email verification
+  //       // from the same device/browser
+  //       const completeSignUpResponse = await signUp.attemptEmailAddressVerification({
+          
+  //       })
+
+  //       if (completeSignUpResponse.status === 'complete') {
+  //         // Set the user session active
+  //         await setActive({ session: completeSignUpResponse.createdSessionId })
+  //         setVerificationStatus('success')
+          
+  //         // Redirect to profile after a short delay
+  //         setTimeout(() => {
+  //           router.push('/profile')
+  //         }, 2000)
+  //       } else {
+  //         console.error('Verification status:', completeSignUpResponse.status)
+  //         setVerificationStatus('error')
+  //         setErrorMessage('Verification failed. Please try again.')
+  //       }
+  //     } catch (err) {
+  //       console.error('Error during verification:', err)
+  //       setVerificationStatus('error')
+  //       setErrorMessage(err?.errors?.[0]?.longMessage || 'An error occurred during verification.')
+  //     }
+  //   }
+
+  //   completeSignUp()
+  // }, [isLoaded, signUp, setActive, router])
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -65,7 +106,7 @@ export default function VerifyPage() {
           </div>
         )}
 
-        {verificationStatus === 'success' && (
+        {verificationStatus === 'verified' && (
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
               <svg className="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,7 +128,7 @@ export default function VerifyPage() {
           </div>
         )}
 
-        {verificationStatus === 'error' && (
+        {verificationStatus === 'failed' && (
           <div className="text-center">
             <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
               <svg className="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
