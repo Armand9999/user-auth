@@ -66,7 +66,7 @@ export default function VerifyPage() {
   useEffect(() => {
     if(!loaded) return
     verify()
-  }, [loaded])
+  }, [handleEmailLinkVerification, loaded])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
