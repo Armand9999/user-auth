@@ -1,4 +1,3 @@
-// app/code-signup/page.js
 'use client'
 
 import React, { useState } from "react";
@@ -36,7 +35,7 @@ export default function SignUp() {
     const { firstName, lastName, email, password } = data;
 
     try {
-      // Create the user with Clerk
+      
       await signUp.create({
         firstName,
         lastName,
@@ -44,13 +43,13 @@ export default function SignUp() {
         password
       });
 
-      // Prepare the email verification with code strategy
+      
       await signUp.prepareEmailAddressVerification({
         strategy: "email_code"
       });
 
-      // Redirect to the verification page
-      router.push('/code-signup/verify');
+      
+      router.push('/sign-up/verify');
     } catch(err) {
       console.error(JSON.stringify(err, null, 2));
       setLoading(false);

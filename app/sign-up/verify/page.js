@@ -1,4 +1,3 @@
-// app/code-signup/verify/page.js
 'use client'
 
 import { useState } from 'react'
@@ -16,9 +15,8 @@ export default function VerifyPage() {
 
   if (!isLoaded) return null
 
-  // If there's no sign-up attempt in progress, redirect to sign-up
   if (!signUp.status) {
-    router.push('/code-signup')
+    router.push('/sign-up')
     return null
   }
 
@@ -28,17 +26,15 @@ export default function VerifyPage() {
     setError('')
 
     try {
-      // Attempt to verify the email with the code
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code
       })
 
       if (completeSignUp.status === 'complete') {
-        // Set the user session active
+        
         await setActive({ session: completeSignUp.createdSessionId })
         setSuccess(true)
         
-        // Redirect to profile after a short delay
         setTimeout(() => {
           router.push('/profile')
         }, 2000)
