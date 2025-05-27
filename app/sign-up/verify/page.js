@@ -45,11 +45,14 @@ export default function VerifyPage() {
           // the 'Require the same device and browser' setting
           // enabled in the Clerk Dashboard
           status = 'client_mismatch'
-          setErrorMessage('This link must be verified in on the same device and browser.')
+          setErrorMessage('This link must be verified on the same device and browser.')
+        } else {
+          setErrorMessage(err?.errors?.[0]?.longMessage || 'An error occurred during verification.')
         }
+      } else {
+        setErrorMessage(err?.errors?.[0]?.longMessage || 'An error occurred during verification.')
       }
-     setVerificationStatus(status)
-     setErrorMessage(err?.errors?.[0]?.longMessage || 'An error occurred during verification.')
+      setVerificationStatus(status)
     }
   }
 
@@ -57,7 +60,7 @@ export default function VerifyPage() {
     if(!loaded) return
 
     verify()
-  }, [handleEmailLinkVerification, loaded])
+  }, [loaded])
 
   // useEffect(() => {
   //   if (!isLoaded) return
@@ -129,6 +132,63 @@ export default function VerifyPage() {
                 Go to Profile
               </Link>
             </div> */}
+          </div>
+        )}
+
+        {verificationStatus === 'client_mismatch' && (
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+              <svg className="h-6 w-6 text-yellow-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="mt-3 text-lg font-medium text-gray-900">Device Mismatch</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              This verification link must be opened on the same device and browser that you used to sign up.
+            </p>
+            <div className="mt-5 space-y-3">
+              <p className="text-sm text-gray-600">
+                Please return to the original device and browser you used during sign-up and click the verification link again.
+              </p>
+              <div>
+                <Link
+                  href="/sign-in"
+                  className="text-sm font-medium text-rose-600 hover:text-rose-500"
+                >
+                  Return to Sign In
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {verificationStatus === 'expired' && (
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-orange-100">
+              <svg className="h-6 w-6 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="mt-3 text-lg font-medium text-gray-900">Link Expired</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              This verification link has expired.
+            </p>
+            <div className="mt-5 space-y-3">
+              <Link
+                href="/sign-up"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-rose-500 hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
+              >
+                Try Again
+              </Link>
+              <div>
+                <Link
+                  href="/sign-in"
+                  className="text-sm font-medium text-rose-600 hover:text-rose-500"
+                >
+                  Return to Sign In
+                </Link>
+              </div>
+            </div>
           </div>
         )}
 
