@@ -53,6 +53,7 @@ const SignUp = () => {
             
             const signUpAttempt = await startEmailLinkFlow({
                 redirectUrl: `${protocol}//${host}/sign-up/verify`,
+                
             });
 
             const verification = signUpAttempt.verifications.emailAddress;

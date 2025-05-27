@@ -7,33 +7,40 @@ import Link from 'next/link'
 import { EmailLinkErrorCodeStatus, isEmailLinkError } from '@clerk/nextjs/errors'
 
 export default function VerifyPage() {
-  // const { isLoaded, signUp, setActive } = useSignUp()
   const [verificationStatus, setVerificationStatus] = useState('loading') 
   const [errorMessage, setErrorMessage] = useState('')
   const router = useRouter()
   const { handleEmailLinkVerification, loaded } = useClerk()
 
-    async function verify() {
-      try {
-        // Dynamically set the host domain for dev and prod
-        // You could instead use an environment variable or other source for the host domain
-        const protocol = window.location.protocol
-        const host = window.location.host
+  // Handler for verification on another device
+  const handleVerifiedOnOtherDevice = () => {
+    setVerificationStatus('verified')
+    setTimeout(() => {
+      router.push('/sign-in')
+    }, 2000)
+  }
 
-        await handleEmailLinkVerification({
-          // URL to navigate to if sign-up flow needs more requirements, such as MFA
-          redirectUrl: `${protocol}//${host}/sign-up`,
-        })
+  async function verify() {
+    try {
+      // Dynamically set the host domain for dev and prod
+      const protocol = window.location.protocol
+      const host = window.location.host
 
-        // If not redirected at this point,
-        // the flow has completed
-        setVerificationStatus('verified')
-        setTimeout(() => {
-          router.push('/sign-in')
-        }, 2000)
+      await handleEmailLinkVerification({
+        // URL to navigate to if sign-up flow needs more requirements, such as MFA
+        redirectUrl: `${protocol}//${host}/sign-up`,
+        onVerifiedOnOtherDevice: handleVerifiedOnOtherDevice
+      })
 
-      } catch (err) {
-        let status = 'failed'
+      // If not redirected at this point,
+      // the flow has completed
+      setVerificationStatus('verified')
+      setTimeout(() => {
+        router.push('/sign-in')
+      }, 2000)
+
+    } catch (err) {
+      let status = 'failed'
 
       if (isEmailLinkError(err)) {
         // If link expired, set status to expired
@@ -58,46 +65,8 @@ export default function VerifyPage() {
 
   useEffect(() => {
     if(!loaded) return
-
     verify()
   }, [loaded])
-
-  // useEffect(() => {
-  //   if (!isLoaded) return
-
-  //   // Attempt to complete the sign-up process
-  //   const completeSignUp = async () => {
-  //     try {
-  //       // This verifies that the user completed email verification
-  //       // from the same device/browser
-  //       const completeSignUpResponse = await signUp.attemptEmailAddressVerification({
-          
-  //       })
-
-  //       if (completeSignUpResponse.status === 'complete') {
-  //         // Set the user session active
-  //         await setActive({ session: completeSignUpResponse.createdSessionId })
-  //         setVerificationStatus('success')
-          
-  //         // Redirect to profile after a short delay
-  //         setTimeout(() => {
-  //           router.push('/profile')
-  //         }, 2000)
-  //       } else {
-  //         console.error('Verification status:', completeSignUpResponse.status)
-  //         setVerificationStatus('error')
-  //         setErrorMessage('Verification failed. Please try again.')
-  //       }
-  //     } catch (err) {
-  //       console.error('Error during verification:', err)
-  //       setVerificationStatus('error')
-  //       setErrorMessage(err?.errors?.[0]?.longMessage || 'An error occurred during verification.')
-  //     }
-  //   }
-
-  //   completeSignUp()
-  // }, [isLoaded, signUp, setActive, router])
-
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
@@ -124,14 +93,14 @@ export default function VerifyPage() {
             <p className="mt-2 text-sm text-gray-500">
               Your email has been verified. You will be redirected to the sign in page shortly.
             </p>
-            {/* <div className="mt-5">
+            <div className="mt-5">
               <Link
-                href="/profile"
+                href="/sign-in"
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-rose-500 hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-500"
               >
-                Go to Profile
+                Go to Sign In
               </Link>
-            </div> */}
+            </div>
           </div>
         )}
 
