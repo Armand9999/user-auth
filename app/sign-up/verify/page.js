@@ -14,10 +14,9 @@ export default function VerifyPage() {
 
   // Handler for verification on another device
   const handleVerifiedOnOtherDevice = () => {
+    console.log("Verified on another device")
     setVerificationStatus('verified')
-    setTimeout(() => {
-      router.push('/sign-in')
-    }, 2000)
+    // No need for timeout, just set the status
   }
 
   async function verify() {
@@ -28,13 +27,16 @@ export default function VerifyPage() {
 
       await handleEmailLinkVerification({
         // URL to navigate to if sign-up flow needs more requirements, such as MFA
-        // redirectUrl: `${protocol}//${host}/sign-up`,
+        redirectUrl: `${protocol}//${host}/sign-in`,
         onVerifiedOnOtherDevice: handleVerifiedOnOtherDevice
       })
 
       // If not redirected at this point,
       // the flow has completed
       setVerificationStatus('verified')
+      setTimeout(() => {
+        router.push('/sign-in')
+      }, 2000)
 
     } catch (err) {
       let status = 'failed'
@@ -63,7 +65,7 @@ export default function VerifyPage() {
   useEffect(() => {
     if(!loaded) return
     verify()
-  }, [handleEmailLinkVerification, loaded])
+  }, [loaded])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
